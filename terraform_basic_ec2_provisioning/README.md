@@ -25,6 +25,7 @@ The configuration process stores your credentials in a file at ~/.aws/credential
 | Create infrastucture | terraform apply |
 | Inspect state | terraform show |
 | Managing manually state | terraform state list |
+| Destroy instance| terraform destroy|
 
 ## Reference link:-
  [https://learn.hashicorp.com/tutorials/terraform/aws-build?in=terraform/aws-get-started]
