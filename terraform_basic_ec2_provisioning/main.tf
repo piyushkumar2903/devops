@@ -1,28 +1,34 @@
-terraform {
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "~> 3.27"
-    }
+provider "aws" {
+  profile = "default"
+  region  = "us-east-2"
+}
+provider "random" {}
+
+resource "random_pet" "name" {}
+resource "aws_security_group" "web-sg" {
+  name = "${random_pet.name.id}-sg"
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 }
 
-provider "aws" {
-  profile    = "default"
-  region     = "us-east-2"
-  #Not a best practice but for beginner purpose, provide the keys below
-  #Provide your access key
-  access_key = ""
-  #Provide your secret key
-  secret_key = ""
-}
-
-resource "aws_instance" "app_server" {
+resource "aws_instance" "web" {
   ami           = "ami-00399ec92321828f5"
   instance_type = "t2.micro"
+  user_data     = file("init-script.sh")
+  vpc_security_group_ids = [aws_security_group.web-sg.id]
 
   tags = {
-    Name = var.instance_name
+    Name = random_pet.name.id
   }
 }
